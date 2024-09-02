@@ -4,64 +4,22 @@
     <meta charset="UTF-8">
     <title>Python Compiler</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs/loader.js"></script>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/tailwind.css') }}">
+    <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="bg-gray-200">
-    <div class="max-w-screen-xl mx-auto px-4 py-8">
-      <h1 class="text-3xl font-bold mb-4 text-center">Python Compiler</h1>
-      <form id="codeForm" class="bg-white p-6 shadow-md rounded-lg">
-        <div class="mb-4">
-          <p class="block text-gray-700 font-bold mb-2">Enter Python Code:</p>
-          <div id="editor" class="h-[300px]"></div>
-        </div>
-        <div class="text-center">
-          <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline w-full sm:w-auto">Run Code</button>
-        </div>
-      </form>
-      <div id="output" class="hidden mt-8 bg-white p-6 shadow-md rounded-lg max-h-[500px]">
-        <pre id="outputText" class="whitespace-pre-wrap font-mono text-sm bg-[black] text-[#48e448] max-h-[450px] overflow-y-auto p-3 rounded [scrollbar-width: thin]"></pre>
-      </div>
+  <body class="bg-gray-100 font-sans flex flex-col items-center p-4">
+    <h1 class="text-3xl font-bold mb-6">Python Compiler</h1>
+    <form id="codeForm" class="bg-white p-6 rounded-lg shadow-md w-full max-w-4xl">
+      <label for="codeInput" class="block text-lg font-medium mb-2">Enter Python Code:</label>
+      <textarea id="codeInput" class="w-full h-80 border border-gray-300 rounded-lg p-2 text-sm font-mono resize-none" placeholder="print('Hello world')"></textarea>
+      <button type="submit" class="mt-4 w-full bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:ring-2 focus:ring-blue-500">Run Code</button>
+    </form>
+    <div id="output" class="mt-6 w-full max-w-4xl bg-white p-6 rounded-lg shadow-md hidden">
+      <pre id="outputText" class="whitespace-pre-wrap text-sm bg-black text-green-400 p-3 rounded"></pre>
     </div>
     <script>
-      const code = 'print("Hello world")';
-      let editor;
-      async function initMonacoEditor() {
-        await new Promise(resolve => {
-          require.config({
-            paths: {
-              'vs': 'https://cdn.jsdelivr.net/npm/monaco-editor@0.50.0/min/vs'
-            }
-          });
-          require(['vs/editor/editor.main'], () => resolve());
-        });
-        editor = monaco.editor.create(document.getElementById('editor'), {
-          value: code,
-          language: 'python',
-          minimap: {
-            enabled: false
-          },
-          theme: 'vs',
-          matchBrackets: 'always',
-          renderValidationDecorations: 'on',
-          scrollbar: {
-            vertical: 'visible',
-            horizontal: 'visible'
-          },
-          fontWeight: 'bold',
-          formatOnPaste: true,
-          semanticHighlighting: true,
-          folding: false,
-          fontSize: 13,
-          cursorBlinking: 'smooth',
-          cursorSmoothCaretAnimation: true,
-          cursorStyle: 'line',
-          automaticLayout: true
-        });
-      }
       async function handleSubmit(event) {
         event.preventDefault();
-        const code = editor.getValue().trim();
+        const code = document.getElementById('codeInput').value.trim();
         if (code === '') {
           alert('Please enter some Python code.');
           return;
@@ -79,16 +37,13 @@
           }
           const data = await response.json();
           document.getElementById('outputText').textContent = data.output;
-          document.getElementById('output').classList.remove("hidden");
+          document.getElementById('output').classList.remove('hidden');
         } catch (error) {
-          document.getElementById('outputText').textContent = error || 'Error occurred while running the code. Please check your code and try again.';
-          document.getElementById('output').classList.remove("hidden");
+          document.getElementById('outputText').textContent = error.message || 'Error occurred while running the code. Please check your code and try again.';
+          document.getElementById('output').classList.remove('hidden');
         }
       }
       document.getElementById('codeForm').addEventListener('submit', handleSubmit);
-      document.addEventListener('DOMContentLoaded', async () => {
-        await initMonacoEditor();
-      });
     </script>
   </body>
 </html>
