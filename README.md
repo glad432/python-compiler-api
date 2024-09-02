@@ -43,7 +43,7 @@ The Python Compiler API provides a single endpoint:
 
    ```bash
    curl -X POST -H "Content-Type: text/plain" -d "print('Hello, World!')" http://localhost:5000/run
-
+   ```
 
 ### CORS Configuration:
 
